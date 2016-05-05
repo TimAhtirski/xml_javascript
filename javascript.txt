@@ -1,0 +1,164 @@
+<div>
+   <table width="100%" class="first" style="text-align: center; border-bottom-color: #e6e6e6; border-bottom-width: 1px; border-bottom-style: solid;">
+      <tbody>
+         <tr>
+            <th width="50%">Property</th>
+            <th width="50%">Spacekey</th>
+         </tr>
+      </tbody>
+   </table>
+</div>
+<div style="width: 889px; height: 347px; margin-top: 10px; -ms-overflow-y: scroll;">
+   <table width="100%" class="second" style="text-align: center;">
+      <tbody>
+         <tr>
+            <td width="53%" style="text-align: left; padding-left: 2%;">CONCORD</td>
+            <td width="48%">7403X</td>
+         </tr>
+      </tbody>
+   </table>
+</div>
+<script>
+    $("table").empty();
+    $(".first").append("<tr><th width='50%'>Property</td><th width='50%'>Spacekey</th></tr>")
+    var storeSpaceKey = [];
+
+    $.when(ajax_1(), ajax_2(), srt()).then(outputResult);
+
+    /////////////////AJAX 1
+    function ajax_1()
+    {
+        $.ajax({
+            type: "POST",
+            url: "http://ma000xslnspc02/space/SPACE%20Central.nsf/(vStoresAll)?ReadViewEntries&start=1&count=600",
+            dataType: "xml",
+            async: false,
+            success: function (xml) {
+
+                var a = $(xml).find("viewentry");
+                a.each(function () {
+                    var x = $(this).find("entrydata");
+                    var ob = {};
+                    $(x).each(function () {
+                        var n = $(this).attr("name");
+                        var v = $(this).find("text").text();
+                        ob[n] = v;
+
+                    });    //x.each
+
+
+                    storeSpaceKey.push(ob); //a.each
+                });
+
+            } //xml end
+        }); //ajax end
+    }//ajax_1
+ 
+
+
+
+    /////////////////////////////////////AJAX 2
+
+
+    function ajax_2() {
+        $.ajax({
+            type: "POST",
+            url: "http://ma000xslnspc02/space/SPACE%20Central.nsf/(vStoresAll)?ReadViewEntries&start=600&count=1200",
+            dataType: "xml",
+            async: false,
+            success: function (xml) {
+
+                var a = $(xml).find("viewentry");
+                a.each(function () {
+                    var x = $(this).find("entrydata");
+                    var ob = {};
+                    $(x).each(function () {
+                        var n = $(this).attr("name");
+                        var v = $(this).find("text").text();
+                        ob[n] = v;
+
+                    });    //x.each
+
+
+                    storeSpaceKey.push(ob); //a.each
+                });
+
+            } //xml end
+        }); //ajax end
+    } //end ajax_2
+
+
+   ///////////////////////////////////////sorting
+   
+    function srt()
+
+
+      {
+           // sort by value
+             storeSpaceKey.sort(function (a, b) {
+             if (a.$25> b.$25) {
+             return 1;
+                                    }
+             if (a.$25< b.$25) {
+             return -1;
+             }
+          // a must be equal to b
+             return 0;
+           });
+      }
+
+     /////////////////////////////////filtering by whole world                  
+         function filterWhole(par)
+
+          {
+             function findWhole() 
+                   {
+                       return p.$25 == par;
+                   } 
+              storeSpaceKey = storeSpaceKey.filter(findWhole);
+ 
+           }
+        
+        
+     ///////////////////////////////filtering starts with
+        
+            function filterStarts(par1)
+
+                {
+                   
+                   
+              function findStartsWith() 
+                   {
+                           
+                       return p.$25.substring(0, par1.length)==par1;
+           
+                   } 
+   
+              storeSpaceKey = storeSpaceKey.filter(findStartsWidth);
+ 
+                }
+        
+           
+        
+        
+
+
+
+   ///////////////////////////////////////rendering
+
+    function outputResult()
+    {
+
+        $.each(storeSpaceKey, function (i, item) {
+            $(".second").append("<tr><td width='53%' style='text-align:left;padding-left:2%'>" + item.$25 + "</td><td width='48%'>" + item.SPACEKEY + "</td></tr>")
+        });
+
+    } // end outputResult
+
+
+
+
+
+
+
+</script>
