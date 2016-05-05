@@ -1,0 +1,119 @@
+<div>
+   <table width="100%" class="first" style="text-align: center; border-bottom-color: #e6e6e6; border-bottom-width: 1px; border-bottom-style: solid;">
+   </table>
+</div>
+
+
+<div style="width: 889px; height: 347px; margin-top: 10px; -ms-overflow-y: scroll;">
+   <table width="100%" class="second" style="text-align: center;">
+  </table>
+</div>
+
+
+
+<script>
+    $("table").empty(); //empty table before opening
+    $(".first").append("<tr><th width='50%'>Property</td><th width='50%'>Spacekey</th></tr>") //insert html into first(header) table
+    var storeSpaceKey = []; // array of objects
+
+    $.when(ajax_1(), ajax_2(), srt()).then(outputResult); //call ajax1, then ajax2, then srt, and then outputResult
+
+    /////////////////AJAX 1 to get first part of property list (1 to 600)
+    function ajax_1()
+    {
+        $.ajax({
+            type: "POST",
+            url: "http://ma000xslnspc02/space/SPACE%20Central.nsf/(vStoresAll)?ReadViewEntries&start=1&count=600",
+            dataType: "xml",
+            async: false,
+            success: function (xml) {
+
+                var a = $(xml).find("viewentry");
+                a.each(function () {
+                    var x = $(this).find("entrydata");
+                    var ob = {};
+                    $(x).each(function () {
+                        var n = $(this).attr("name");
+                        var v = $(this).find("text").text();
+                        ob[n] = v;
+
+                    });    //x.each
+
+
+                    storeSpaceKey.push(ob); 
+                }); //end of loop
+
+            } //xml end
+        }); //ajax end
+    }//ajax_1
+ 
+
+
+
+    /////////////////////////////////////AJAX 2 to get second part of property list (600 to 1200)
+
+
+    function ajax_2() {
+        $.ajax({
+            type: "POST",
+            url: "http://ma000xslnspc02/space/SPACE%20Central.nsf/(vStoresAll)?ReadViewEntries&start=600&count=1200",
+            dataType: "xml",
+            async: false,
+            success: function (xml) {
+
+                var a = $(xml).find("viewentry");
+                a.each(function () {
+                    var x = $(this).find("entrydata");
+                    var ob = {};
+                    $(x).each(function () {
+                        var n = $(this).attr("name");
+                        var v = $(this).find("text").text();
+                        ob[n] = v;
+
+                    });    //x.each
+
+
+                    storeSpaceKey.push(ob);
+                }); //end of loop
+
+            } //xml end
+        }); //ajax end
+    } //end ajax_2
+
+
+   ///////////////////////////////////////sorting
+   
+    function srt()
+
+      {
+           // sort by storeName asc
+             storeSpaceKey.sort(function (a, b) {
+             if (a.$25> b.$25) {
+             return 1;
+                                    }
+             if (a.$25< b.$25) {
+             return -1;
+             }
+          
+             return 0;
+           });
+      }
+  
+
+
+
+   ///////////////////////////////////////rendering
+
+    function outputResult()
+    {
+
+        $.each(storeSpaceKey, function (i, item) {
+            $(".second").append("<tr><td width='53%' style='text-align:left;padding-left:2%'>" + item.$25 + "</td><td width='48%'>" + item.SPACEKEY + "</td></tr>")
+        });
+
+    } // end outputResult
+
+
+
+
+</script>
